@@ -7,6 +7,7 @@ let cards;
 let playerCards = [];
 let dealerCards = [];
 const playerCardsDiv = document.getElementById("player-cards-container");
+const dealerCardsDiv = document.getElementById("dealer-cards-container");
 
 // Créer un nouveau deck mélangé
 function ShuffleCards() {
@@ -43,7 +44,8 @@ function DrawCards() {
         playerCards.push({ value: data.cards[i].value, score: cardValue }); // Ajoutez cette ligne pour stocker les cartes du joueur
         document.getElementById("player-score").innerText = "Me: " + playerScore;
       }
-      // Afficher les cartes du dealer
+      
+      
       for (let i = 2; i < 4; i++) {
         const cardValue = getValue(data.cards[i].value, false); // Passer 'false' pour indiquer que c'est pour le dealer
         dealerScore += cardValue;
@@ -52,7 +54,18 @@ function DrawCards() {
           "Dealer: " + dealerScore;
       }
       
+      // Affichage des cartes du dealer
+      cards = document.createElement("img");
+      cards.src = data.cards[2].images.png;
+      dealerCardsDiv.appendChild(cards);
       
+      cards = document.createElement("img");
+      cards.src = data.cards[3].images.png;
+      dealerCardsDiv.appendChild(cards);
+      
+
+
+      //affichage cards player
       cards = document.createElement("img");
       cards.src = data.cards[0].images.png;
       playerCardsDiv.appendChild(cards);
@@ -60,6 +73,10 @@ function DrawCards() {
       cards = document.createElement("img");
       cards.src = data.cards[1].images.png;
       playerCardsDiv.appendChild(cards);
+
+
+
+      
     })
     .catch((error) => console.error(error));
 }
@@ -144,7 +161,10 @@ function DealerHit() {
       const cardValue = getValue(data.cards[0].value, false); // Passer 'false' pour indiquer que c'est pour le dealer
       dealerScore += cardValue;
       dealerCards.push({ value: data.cards[0].value, score: cardValue }); // Ajouter cette ligne pour stocker les cartes du dealer
-
+      // Affichage de la carte supplémentaire du dealer
+      cards = document.createElement("img");
+      cards.src = data.cards[0].images.png;
+      dealerCardsDiv.appendChild(cards);
       if (dealerScore > 21) {
         for (let i = 0; i < dealerCards.length; i++) {
           if (dealerCards[i].value === "ACE" && dealerCards[i].score === 11) {

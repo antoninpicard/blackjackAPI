@@ -1,33 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <title>Blackjack</title>
-      <style>
-        .card-hidden {
-          opacity: 0.1;
-          filter: blur(10px);
-        }
-      </style>
-    </head>
-    <body>
-      <div id="game-container">
-        <div id="score-container">
-          <div id="dealer-cards"></div>
-          <h2 id="dealer-score">Dealer: 0</h2>
-          <br />
-          <div id="player-cards"></div>
-          <h2 id="player-score">Me: 0</h2>
-        </div>
+  <head>
+    <meta charset="utf-8">
+    <title>Blackjack</title>
+    <script src="blackjack.js" defer></script>
+  </head>
+  <body>
+    <div id="game-container">
+      
+      <div id="score-container">
+        <h2 id="dealer-score">Dealer: 0</h2>
+        <div id="dealer-cards-container">
 
-        <div id="button-container">
-          <button id="deal-button" onclick="ShuffleCards()">Deal</button>
-          <button id="hit-button" onclick="Hit()" disabled>Hit</button>
-          <button id="stand-button" onclick="Stand()" disabled>Stand</button>
+        </div>
+        
+        <h2 id="player-score">Me: 0</h2>
+        <div id="player-cards-container">
+
         </div>
       </div>
-      <script src="script.js"></script>
-    </body>
-  </html>
+      
+      <div id="button-container">
+        <button id="deal-button" onclick="ShuffleCards()">Deal</button>
+        <button id="hit-button" onclick="Hit()" disabled>Hit</button>
+        <button id="stand-button" onclick="Stand()" disabled>Stand</button>
+      </div>
+    </div>
+    
+  </body>
 </html>

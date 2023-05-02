@@ -183,7 +183,7 @@ function DealerHit() {
         setTimeout(() => {
           //le setTimeout permet de mettre à jour le score avant les alert de résulat
           determineWinner();
-        }, 500);
+        }, 1000);
       }
     })
     .catch((error) => console.error(error));

@@ -3,6 +3,10 @@ let deckId;
 let playerScore = 0;
 let dealerScore = 0;
 let isPlayer = true;
+let cards;
+let playerCards = [];
+let dealerCards = [];
+const playerCardsDiv = document.getElementById("player-cards-container");
 
 // Créer un nouveau deck mélangé
 function ShuffleCards() {
@@ -18,7 +22,7 @@ function ShuffleCards() {
       document.getElementById("deal-button").innerText = "Reset";
       document
         .getElementById("deal-button")
-        .setAttribute("onclick", "ResetGame()");
+        .setAttribute("onclick", "location.reload()");
       document.getElementById("player-score").innerText = "Score: 0";
       document.getElementById("dealer-score").innerText = "Score: 0";
       DrawCards();
@@ -34,16 +38,28 @@ function DrawCards() {
       console.log(data);
       // Afficher les cartes du joueur
       for (let i = 0; i < 2; i++) {
-        playerScore += getValue(data.cards[i].value);
-        document.getElementById("player-score").innerText =
-          "Me: " + playerScore;
+        const cardValue = getValue(data.cards[i].value, true);
+        playerScore += cardValue;
+        playerCards.push({ value: data.cards[i].value, score: cardValue }); // Ajoutez cette ligne pour stocker les cartes du joueur
+        document.getElementById("player-score").innerText = "Me: " + playerScore;
       }
       // Afficher les cartes du dealer
       for (let i = 2; i < 4; i++) {
-        dealerScore += getValue(data.cards[i].value);
+        const cardValue = getValue(data.cards[i].value, false); // Passer 'false' pour indiquer que c'est pour le dealer
+        dealerScore += cardValue;
+        dealerCards.push({ value: data.cards[i].value, score: cardValue }); // Ajouter cette ligne pour stocker les cartes du dealer
         document.getElementById("dealer-score").innerText =
           "Dealer: " + dealerScore;
       }
+      
+      
+      cards = document.createElement("img");
+      cards.src = data.cards[0].images.png;
+      playerCardsDiv.appendChild(cards);
+
+      cards = document.createElement("img");
+      cards.src = data.cards[1].images.png;
+      playerCardsDiv.appendChild(cards);
     })
     .catch((error) => console.error(error));
 }
@@ -53,11 +69,30 @@ function Hit() {
   fetch("https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1")
     .then((response) => response.json())
     .then((data) => {
-      const cardValue = getValue(data.cards[0].value);
+      const cardValue = getValue(data.cards[0].value, true);
       playerScore += cardValue;
-      document.getElementById("player-score").innerText = "Me: " + playerScore;
+      playerCards.push({ value: data.cards[0].value, score: cardValue });
+      
+
+      //affichage carte quand on hit
+      cards = document.createElement("img");
+      cards.src = data.cards[0].images.png;
+      playerCardsDiv.appendChild(cards);
+
       if (playerScore > 21) {
-        determineWinner();
+        for (let i = 0; i < playerCards.length; i++) {
+          if (playerCards[i].value === "ACE" && playerCards[i].score === 11) {
+            playerScore -= 10; // Changez la valeur de l'As de 11 à 1
+            playerCards[i].score = 1;
+            break;
+          }
+        }
+      }
+    
+      document.getElementById("player-score").innerText = "Me: " + playerScore;
+
+      if (playerScore > 21) {
+        setTimeout(determineWinner, 500);
       }
     })
     .catch((error) => console.error(error));
@@ -69,15 +104,18 @@ function DealerScore(numbers) {
   dealerScoreElement.innerText = "Dealer: " + dealerScore;
 }
 
-// Fonction pour réinitialiser le jeu
-function ResetGame() {
-  ShuffleCards();
-}
+
+
 
 // Fonction pour retourner la valeur numérique d'une carte
-function getValue(cardValue) {
+function getValue(cardValue, isPlayerCard) {
   if (cardValue === "ACE") {
-    return 11;
+    let score = isPlayerCard ? playerScore : dealerScore;
+    if (score + 11 > 21) {
+      return 1;
+    } else {
+      return 11;
+    }
   } else if (
     cardValue === "KING" ||
     cardValue === "QUEEN" ||
@@ -103,20 +141,34 @@ function DealerHit() {
   fetch("https://deckofcardsapi.com/api/deck/" + deckId + "/draw/?count=1")
     .then((response) => response.json())
     .then((data) => {
-      const cardValue = getValue(data.cards[0].value);
+      const cardValue = getValue(data.cards[0].value, false); // Passer 'false' pour indiquer que c'est pour le dealer
       dealerScore += cardValue;
+      dealerCards.push({ value: data.cards[0].value, score: cardValue }); // Ajouter cette ligne pour stocker les cartes du dealer
+
+      if (dealerScore > 21) {
+        for (let i = 0; i < dealerCards.length; i++) {
+          if (dealerCards[i].value === "ACE" && dealerCards[i].score === 11) {
+            dealerScore -= 10; // Changez la valeur de l'As de 11 à 1
+            dealerCards[i].score = 1;
+            break;
+          }
+        }
+      }
+
       document.getElementById("dealer-score").innerText =
         "Dealer: " + dealerScore;
       if (dealerScore < 17) {
         DealerHit();
       } else {
-        setTimeout(() => {//le setTimeout permet de mettre à jour le score avant les alert de résulat
+        setTimeout(() => {
+          //le setTimeout permet de mettre à jour le score avant les alert de résulat
           determineWinner();
         }, 500);
       }
     })
     .catch((error) => console.error(error));
 }
+
 
 
 
@@ -136,3 +188,4 @@ function determineWinner() {
     alert("Dealer Wins!");
   }
 }
+

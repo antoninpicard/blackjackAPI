@@ -181,9 +181,9 @@ function DealerHit() {
         DealerHit();
       } else {
         setTimeout(() => {
-          //le setTimeout permet de mettre à jour le score avant les alert de résulat
+          //le setTimeout permet de mettre à jour le score et l'affichage des cartes avant les alerts de résulat
           determineWinner();
-        }, 500);
+        }, 1000);
       }
     })
     .catch((error) => console.error(error));

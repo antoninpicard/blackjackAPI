@@ -19,9 +19,16 @@
 
         </div>
       </div>
-      
+      <!-- Ajouter cet élément dans le fichier HTML, à l'intérieur de la balise <div id="game-container"> -->
+      <div id="balance-container">
+        <h2 id="balance">Balance: 3000</h2>
+        <input type="number" id="bet" placeholder="Enter bet" min="1" max="3000" />
+        
+      </div>
+
       <div id="button-container">
-        <button id="deal-button" onclick="ShuffleCards()">Deal</button>
+        <button id="deal-button" onclick="placeBet()">Deal</button>
+
         <button id="hit-button" onclick="Hit()" disabled>Hit</button>
         <button id="stand-button" onclick="Stand()" disabled>Stand</button>
       </div>

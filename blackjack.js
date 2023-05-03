@@ -8,6 +8,9 @@ let playerCards = [];
 let dealerCards = [];
 const playerCardsDiv = document.getElementById("player-cards-container");
 const dealerCardsDiv = document.getElementById("dealer-cards-container");
+let balance = 3000;
+let bet = 0;
+
 
 // Créer un nouveau deck mélangé
 function ShuffleCards() {
@@ -23,13 +26,14 @@ function ShuffleCards() {
       document.getElementById("deal-button").innerText = "Reset";
       document
         .getElementById("deal-button")
-        .setAttribute("onclick", "location.reload()");
+        .setAttribute("onclick", "resetGame()"); // Remplacez location.reload() par resetGame()
       document.getElementById("player-score").innerText = "Score: 0";
       document.getElementById("dealer-score").innerText = "Score: 0";
       DrawCards();
     })
     .catch((error) => console.error(error));
 }
+
 
 // Distribution des cartes
 function DrawCards() {
@@ -192,20 +196,74 @@ function DealerHit() {
 
 
 
+function resetGame() {
+  playerScore = 0;
+  dealerScore = 0;
+  playerCards = [];
+  dealerCards = [];
+  playerCardsDiv.innerHTML = '';
+  dealerCardsDiv.innerHTML = '';
+  document.getElementById("player-score").innerText = "Me: 0";
+  document.getElementById("dealer-score").innerText = "Dealer: 0";
+  document.getElementById("hit-button").disabled = true;
+  document.getElementById("stand-button").disabled = true;
+  bet = 0; // Réinitialisez la mise à 0
+  document.getElementById("bet").value = 0; // Mettez à jour le champ de mise
+  document.getElementById("deal-button").innerText = "Deal"; // Changez le texte du bouton en "Deal"
+  document.getElementById("deal-button").setAttribute("onclick", "placeBet()"); // Ajoutez un attribut onclick pour appeler placeBet()
+}
+
+
+
+function placeBet() {
+  bet = parseInt(document.getElementById("bet").value);
+
+  if (bet > 0 && bet <= balance) {
+    balance -= bet;
+    document.getElementById("balance").innerText = "Balance: " + balance;
+    document.getElementById("bet").disabled = true;
+    ShuffleCards(); // Appelez ShuffleCards() après avoir vérifié que la mise est valide
+  } else if (bet > balance) {
+    alert("You cannot bet more than your current balance.");
+  } else {
+    alert("Invalid bet. Please enter a valid amount.");
+  }
+}
+
+
+
+
 function determineWinner() {
   document.getElementById("hit-button").disabled = true;
   document.getElementById("stand-button").disabled = true;
 
+  let payout = 0;
+  let message = "";
+
   if (playerScore > 21) {
-    alert("You Bust, Dealer Win !!");
+    message = "You Bust, Dealer Win !!";
   } else if (dealerScore > 21) {
-    alert("Dealer Bust, Player Win !!");
+    payout = bet * 2;
+    message = "Dealer Bust, Player Win !!";
   } else if (playerScore === dealerScore) {
-    alert("It's a Tie!");
+    payout = bet;
+    message = "It's a Tie!";
   } else if (playerScore > dealerScore) {
-    alert("Player Wins!");
+    if (playerScore === 21 && playerHand.length === 2) {
+      payout = bet * 2.5;
+      message = "Blackjack! Player Wins!";
+    } else {
+      payout = bet * 2;
+      message = "Player Wins!";
+    }
   } else {
-    alert("Dealer Wins!");
+    message = "Dealer Wins!";
   }
+
+  balance += payout;
+  document.getElementById("balance").innerText = "Balance: " + balance;
+  document.getElementById("bet").disabled = false;
+  alert(message);
 }
+
 
